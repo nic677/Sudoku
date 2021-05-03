@@ -1,16 +1,18 @@
 import math
+import os
+import time
 
-table = [[ 0, 0, 4,   0, 0, 0,   0, 6, 7 ],
-         [ 3, 0, 0,   4, 7, 0,   0, 0, 5 ],
-         [ 1, 5, 0,   8, 2, 0,   0, 0, 3 ],
+table = [[0,0,0, 0,2,7, 9,0,4],
+         [9,6,0, 0,8,5, 1,0,0],
+         [0,0,0, 3,0,9, 0,0,0],
 
-         [ 0, 0, 6,   0, 0, 0,   0, 3, 1 ],
-         [ 8, 0, 2,   1, 0, 5,   6, 0, 4 ],
-         [ 4, 1, 0,   0, 0, 0,   9, 0, 0 ],
+         [0,0,9, 0,0,0, 8,0,0],
+         [1,0,0, 0,0,0, 0,7,5],
+         [0,5,7, 0,0,2, 0,0,0],
 
-         [ 7, 0, 0,   0, 8, 0,   0, 4, 6 ],
-         [ 6, 0, 0,   0, 1, 2,   0, 0, 0 ],
-         [ 9, 3, 0,   0, 0, 0,   7, 1, 0 ] ]
+         [7,2,0, 8,0,6, 3,0,0],
+         [0,0,0, 0,7,3, 0,0,0],
+         [3,0,0, 0,4,1, 7,0,6]]
 
 
 def draw_board(n, table):
@@ -37,7 +39,7 @@ def draw_board(n, table):
 
 def check_valid_BOX(table, i , j):
     n = len(table)
-    m = math.sqrt(n)
+    m = int(math.sqrt(n))
     Try = []
     Big_x, Big_y = i//m, j//m
     for x in range(m*Big_x, m*(Big_x + 1)):
@@ -76,5 +78,64 @@ def check_valid_column(table, i, j):
 def check_conditions_valid(table, i,j):
     return check_valid_BOX(table, i,j)*check_valid_row(table, i,j)*check_valid_column(table, i,j)
 
+def choose_position(table):
+    n = len(table)
+    for i in range(n):
+        for j in range(n):
+            if table[i][j]==0:
 
-check_conditions_valid(table, 0 ,0 )
+                return (i,j)
+    return 1
+
+def backtracking_solver(table):
+    n = len(table)
+    Used_positions = []
+
+    count_zeros = 0
+    for i in range(n):
+        for j in range(n):
+            if table[i][j] == 0:
+                count_zeros += 1
+
+    pos = 0
+    while count_zeros != 0:
+        if choose_position(table) == 1:
+            return table
+        else:
+
+            i_cur, j_cur = choose_position(table)
+            Used_positions.append([i_cur, j_cur])
+
+
+            valid = 0
+            k = 1
+            while valid == 0:
+                #print(pos)
+                time.sleep(0.01)
+                os.system('clear')
+                draw_board(int(math.sqrt(n)),table )
+                table[i_cur][j_cur] = k
+
+                valid = check_conditions_valid(table, i_cur, j_cur)
+                k += 1
+                if k==10 and valid != 1:
+
+                    table[i_cur][j_cur] = 0
+                    count_zeros += 1
+
+                    Used_positions.pop(-1)
+
+
+                    i_cur, j_cur = Used_positions[-1][0],Used_positions[-1][1]
+                    k = table[i_cur][ j_cur]
+                    #print("ENTERED IF", k)
+                    time.sleep(0.005)
+                    k += 1
+                    table[i_cur][j_cur] = k
+                    valid = check_conditions_valid(table,i_cur,j_cur)
+
+            count_zeros -=1
+
+
+
+backtracking_solver(table)
